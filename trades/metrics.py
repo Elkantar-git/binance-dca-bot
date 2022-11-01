@@ -13,7 +13,11 @@ def get_all_order_prices(order):
     for coin in order:
         coin_stats[coin] = []
         for item in order[coin]['orders']:
-            coin_stats[coin].append(float(item['price']))
+                # FOR LIVE ORDERS
+            for i in item['fills']:
+                coin_stats[coin].append(float(i['price']))
+                # FOR TEST ORDERS
+            # coin_stats[coin].append(float(item['price']))
 
     return coin_stats
 
