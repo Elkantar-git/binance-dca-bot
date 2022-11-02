@@ -3,3 +3,4 @@ matplotlib==3.4.3
 numpy==1.21.2
 python_binance==0.7.9
 PyYAML==6.0
+pandas

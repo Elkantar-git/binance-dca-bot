@@ -4,6 +4,7 @@ import pandas as pd
 from auth.binance_auth import *
 from binance.enums import *
 
+# load credentials
 client = load_binance_creds('auth/auth.yml')
 
 def get_price(coin, pairing):
@@ -55,8 +56,6 @@ def convert_volume(coin, quantity):
         logger.debug(f'Converted {quantity} {coin} by setting lot size to 0')
         lot_size = {coin:0}
 
-    # calculate the volume in coin from QUANTITY in USDT (default)
-    # volume = float(quantity / float(last_price))
     volume = quantity
 
     # define the volume with the correct step size
@@ -68,27 +67,10 @@ def convert_volume(coin, quantity):
         if lot_size[coin] == 0:
             volume = int(volume)
         else:
-            # volume = float('{:.{}f}'.format(volume, lot_size[coin]))
             volume = float('{:.{}f}'.format(volume, lot_size[coin]))
 
     logger.debug(f'Sucessfully converted {quantity} {coin} to {volume} in trading coin')
     return volume
-
-def strategy(ath, last_price, volume, average_dca):
-
-    deltaPrice = last_price / average_dca
-
-    # BUY
-    if last_price <= 0.5 * ath:
-        if deltaPrice > 1.9:
-            deltaPrice = 1.9
-        buyAmount = (2 * volume) / deltaPrice
-    elif last_price > 0.5 * ath:
-        if deltaPrice > 1:
-            deltaPrice = 1
-        buyAmount = (1 * volume) / deltaPrice
-    buyAmount = buyAmount / float(last_price)
-    return buyAmount
 
 def create_order(coin, amount):
     """
@@ -101,15 +83,4 @@ def create_order(coin, amount):
 
     return client.order_market_buy(
         symbol=coin,
-        quantity=amount)
-
-def create_test_order(coin, amount):
-    """
-    Creates simple buy order and returns the order
-    """
-    
-    return client.create_test_order(
-        symbol=coin,
-        side=SIDE_BUY,
-        type=ORDER_TYPE_MARKET,
         quantity=amount)
